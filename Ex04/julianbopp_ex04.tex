@@ -1,0 +1,287 @@
+% Continuous Optimization
+% Aurelien Lucchi
+\documentclass{article}
+
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{mathtools}
+\usepackage[usenames,dvipsnames,table,xcdraw]{xcolor}
+\usepackage{enumerate}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage[margin=0.5in]{geometry}
+\usepackage[round]{natbib}
+
+\input{header_hw}
+
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\newcommand{\minsub}[1]{\operatorname*{min}_{#1}}
+\newcommand{\argminsub}[1]{\operatorname*{argmin}_{#1}}
+\newcommand{\twovector}[2]{\begin{pmatrix} #1 \\ #2 \end{pmatrix}}
+\newcommand{\vect}[1]{\mathbf{#1}}
+\newcommand{\define}{\coloneqq}
+\newcommand{\st}{\textnormal{s.t.}\ }
+\newcommand{\set}[1]{\left\{ #1 \right\}}
+
+\begin{document}
+\Homework{4}{Constrained Optimization}{Aurelien Lucchi, Student: Julian Bopp}
+
+
+\HomeworkV{1}{Constrained problem}{
+Consider the following 2-dimensional problem
+\begin{align*}
+\min f(x&,y)\define x(1-y^2) \\
+&\st x^2+y^2 = 1.
+\end{align*}
+
+\begin{enumerate}
+\item Write the stationary and primal feasibility conditions.
+
+\underline{Stationary conditions}:
+Define the lagrangian
+\begin{align*}
+L(x,y,v) &= f(x,y) + v l(x,y)\\
+         &= x(1-y^2) + v (x^2+y^2 - 1),
+\end{align*}
+where $l(x,y) \define x^2+y^2 -1$ encodes the equality constraint.
+Find the derivative's w.r.t $x$ and $y$
+\begin{align*}
+\partial_x L(x,y,v) &= 1-y^2 + 2vx \\
+\partial_y L(x,y,v) &= -2yx + 2vy.
+\end{align*}
+Now the stationary conditions are
+\begin{align*}
+1-y^2 + 2vx &= 0\\
+-2yx + 2vy &= 0.
+\end{align*}
+
+\underline{Primal feasibility condition}:
+The primal feasibily condition is that the constraint is satisfied, i.e. that
+\begin{equation*}
+l(x,y) \define x^2 + y^2 - 1 = 0
+\end{equation*}
+
+
+\item Derive the optimal solution $(x^*,y^*)$.
+
+Solving the system of two equations from the stationary conditons we get
+\begin{equation*}
+\set{(-\frac{1}{2v},0),(v,1-2v^2) }
+\end{equation*}
+as a set of possible solutions. Combining this with the primal feasibility condition yields
+\begin{equation*}
+\set{(-1,0),(1,0),(0,-1),(0,1)}
+\end{equation*}
+as a set of possible solutions. We see that
+\begin{align*}
+f(-1,0) &=-1 \\
+f(1,0) &= 1\\
+f(0,-1) &= 0 \\
+f(0,1) &= 0,
+\end{align*}
+and conclude that $(x^*,y^*)\define(-1,0)$ solves the constrained problem.
+
+\end{enumerate}
+
+}
+
+\HomeworkV{2}{KKT problem with two constraints}{
+Consider the following 3-dimensional problem
+\begin{align*}
+&\min f(x,y,z)\define x+y+z \\
+&\st x^2-y^2 = 1\ \textnormal{and}\ 2x+z-1 =0.
+\end{align*}
+
+\begin{enumerate}
+\item Write the stationary and primal feasibility conditions.
+
+\underline{Stationary conditions}:
+Define the lagrangian
+\begin{align*}
+L(x,y,z,v_1,v_2) &= f(x,y,z) + v_1 l_1(x,y,z) + v_2 l_2(x,y,z)\\
+         &= x+y+z + v_1(x^2-y^2-1) + v_2(2x+z+1),
+\end{align*}
+where $l_1(x,y,z) \define x^2-y^2 -1$ and $l_2(x,y,z)\define 2x+z+1$ encode the equality constraints.
+Find the derivative's w.r.t $x$ and $y$ and $z$
+\begin{align*}
+\partial_x L(x,y,z,v_1,v_2) &= 1+2v_1 x + 2v_2 \\
+\partial_y L(x,y,z,v_1,v_2) &= 1-2v_1y \\
+\partial_z L(x,y,z,v_1,v_2) &= 1+v_2.
+\end{align*}
+Now the stationary conditions are
+\begin{align*}
+1+2v_1 x + 2v_2 &=0\\
+1-2v_1y &=0\\
+1+v_2 &=0.
+\end{align*}
+
+
+\underline{Primal feasibility conditions}:
+The primal feasibily conditions are that the equality constraints are satisfied, i.e. that
+\begin{alignat*}{3}
+l_1(x,y,z) &\define x^2 - y^2 - &1 = 0\\
+l_2(x,y,z) &\define 2x+z-&1 = 0
+\end{alignat*}
+
+\item Derive all the optimal solutions.
+
+From the the 3rd equality of the stationary conditions we get $v_2=-1$ and with that we get
+$x=y=\frac{1}{2v_1}$. Combining this with the first primal feasibility condition we geometry
+\begin{align*}
+\left(\frac{1}{2v_1}\right)^2- \left(\frac{1}{2v_1}\right)^2 -1 = 0 \implies -1 = 0,
+\end{align*}
+which is a contradiction. Therefore no optimal solution exists.
+
+\item Can you comment on the results?
+
+There exists no solution because $f$ is not bounded from below on the constraints. To see this let $x=k\geq1$. To satisfy the first equality constraint we pick $y=-\sqrt{k^2-1}$ and to satisfy the second equality constraint we let $z = 1 - 2k$. We then get $f(x,y,z) = -k-\sqrt{k^2-1} + 1$, which goes to $-\infty$, as $k$ goes to $\infty$.
+
+\end{enumerate}
+
+}
+
+
+
+\HomeworkV{3}{Projection onto hyperplane}{
+Consider the projection of a vector onto a hyperplane identified by the equation $\vect{Ax} = \vect{b}$, i.e.
+\begin{equation}\label{eq:1}
+\vect{x} = \textnormal{Proj}_{\vect{Ax=b}}(\vect{y}) = \argminsub{\vect{x:Ax=b}}\frac{1}{2}\norm{\vect{y-x}}^2.
+\end{equation}
+
+\begin{enumerate}
+\item Write down the Lagrangian corresponding to the constrained problem defined in Eq. \eqref{eq:1}.
+
+We want to minimize the function $f(\vect{x})=\frac{1}{2}\norm{\vect{y-x}}^2$ given the equality constraint $\vect{Ax=b}$. Let $\vect{A} \in \mathbb{R}^{m\times n}$, therefore $\vect{x}\in\mathbb{R}^n$ and $\vect{b}\in\mathbb{R}^m$.
+We can encode the equality constraint $\vect{Ax=b}$ as a vector valued function
+\begin{equation*}
+l: \mathbb{R}^n \to \mathbb{R}^m,\ x \mapsto Ax-b.
+\end{equation*}
+Now let $\vect{v} = (v_1,\dots,v_m)^\top$ and define the lagrangian
+\begin{align*}
+L(\vect{x},\vect{v}) &= f(\vect{x}) + \vect{v}^\top l(\vect{x})\\
+                     &= \frac{1}{2}\norm{y-x}^2 + \vect{v}^\top (\vect{Ax-b}).
+\end{align*}
+
+\item Calculate the optimal value of $\vect{x}$ (using the KKT conditions). Show that
+\begin{equation*}
+\vect{x = Py + A^\top (AA^\top})^{-1}\vect{b},
+\end{equation*}
+where $\vect{P}\define \vect{I-A^\top}(\vect{AA^\top}^{-1}\vect{A})$ is a projection matrix.
+
+\underline{Stationary conditions}:
+Find the derivative of the lagrangian w.r.t $\vect{x}$
+\begin{equation*}
+\partial_{\vect{x}}L(\vect{x},\vect{v}) = \vect{x-y} + A^\top v.
+\end{equation*}
+Therefore the stationary condition is $\vect{x-y+A^\top v} = \vect{0}$, i.e. $\vect{x} = \vect{y-A^\top v}$.
+
+\underline{Primal feasibility conditions}
+The primal feasibility conditions are our equality constraints $\vect{Ax=b}$. Using the result obtained from the stationary conditions we get
+\begin{align*}
+&\vect{A(y-A^\top v)=\vect{b}}\\
+\implies &\vect{Ay-AA^\top v} = \vect{b}\\
+\implies &\vect{AA^\top v} = \vect{Ay-b}\\
+\implies &\vect{v} = (\vect{AA^\top})^{-1}(\vect{Ay-b})
+\end{align*}
+
+Plugging this into our expression for $\vect{x}$ we get
+\begin{align*}
+\vect{x} &= \vect{y} - \vect{A}^\top (\vect{AA^\top})^{-1}(\vect{Ay-b})\\
+         &= \underbrace{(\vect{I}-\vect{A}^\top(\vect{AA}^\top)^{-1}\vect{A})}_{\vect{P}\define}\vect{y} + \vect{A}^\top(\vect{AA}^\top)^{-1}\vect{b},
+\end{align*}
+which is what was to be shown.
+
+
+\end{enumerate}
+
+
+}
+
+
+
+
+\HomeworkV{4}{Normal cones}{
+
+Consider the following two sets:
+\begin{equation*}
+\Omega_\infty \define \set{\vect{x}\in\mathbb{R}^d : \norm{\vect{x}}_\infty\leq 1},
+\end{equation*}
+
+and
+\begin{equation*}
+\Omega_2\define \set{\vect{x}\in\mathbb{R}^d : \norm{\vect{x}}_2\leq 1},
+\end{equation*}
+
+\begin{enumerate}
+\item Show that $\Omega_\infty$ and $\Omega_2$ are non-empty, convex and closed.
+
+\textcolor{blue}{These results can be shown independent of the norm used. We use $\Omega$ and $\norm{\cdot}$ for both sets and norms.}
+
+\underline{Non-empty}: $\norm{\vect{0}} = 0$ and therefore $\vect{0}\in\Omega$.
+
+\underline{Convex}: Let $\vect{a},\vect{b}\in\Omega$ and $\lambda\in(0,1)$. $\Omega$ is convex if $\lambda\vect{a} + (1-\lambda)\vect{b}\in \Omega$.
+\begin{align*}
+\norm{\lambda \vect{a} + (1-\lambda)\vect{b}} &\leq \lambda \norm{\vect{a}} + (1-\lambda)\norm{\vect{b}}\\
+                                              &\leq \lambda + 1 - \lambda \\
+                                              &= 1.
+\end{align*}
+Therefore $\lambda\vect{a} + (1-\lambda)\vect{b}\in \Omega$ and $\Omega$ is convex. For the first inequality we used the triangle inequality and for the second inequality we used the fact that $\vect{a},\vect{b}\in\Omega$ and therefore have norm less than $1$.
+
+\underline{Closed}: Let $\Omega^c= \mathbb{R}^d\setminus\Omega$. To show that $\Omega$ is closed we show that
+$\Omega^c$ is open. To show that a set is open we must show that for every element in the set there exists an open ball that is completely contained in the set. Let $\vect{x}\in\Omega^c$, this implies $\norm{\vect{x}}>1$. Let $\epsilon = \norm{\vect{x}} -1$ and define the open ball $B(\vect{x},\epsilon)$ with center $\vect{x}$ and radius $\epsilon$. Let $\vect{y}\in B(\vect{x},\epsilon)$. Then by the definition of an open ball we have
+$\norm{\vect{x-y}}_2<\epsilon$ (here I use the euclidean norm because I assume that we want to show that
+$\Omega_\infty,\Omega_2$ are both open in $(\mathbb{R}^d,\norm{\cdot}_2$). Now we show that $\vect{y}\in \Omega^c$. First, by the triangle inequality
+\begin{align*}
+\norm{\vect{x}} = \norm{\vect{x-y+y}} \leq \norm{\vect{y}} + \norm{\vect{x-y}}.
+\end{align*}
+From this we get
+\begin{align*}
+\norm{\vect{y}} &\geq \norm{\vect{x}} - \norm{\vect{x-y}}\\
+                &\overset{(*)}{\geq} \norm{\vect{x}} - \norm{\vect{x-y}}_2\\
+                &> 1 + \epsilon - \epsilon \\
+                &=1.
+\end{align*}
+$(*)$ This inequality is trivial if $\norm{\cdot} = \norm{\cdot}_2$, but if $\norm{\cdot}=\norm{\cdot}_\infty$ we use the result that $\norm{\vect{x}}_\infty\leq\norm{\vect{x}}_2\, \forall \vect{x}\in\mathbb{R}^d$.
+This shows that for every $\vect{x}\in\Omega^c$ there exists an $\epsilon > 0$ such that the open ball centered at $\vect{x}$ with radius $\epsilon$ is contained in $\Omega^c$. Therefore $\Omega^c$ is an open set and hence $\Omega$ is a closed set.
+
+
+\item Determine the normal cones of $\Omega_\infty$ and $\Omega_2$ for $d=2$ at the point $\vect{x} = (1,0)^\top$.
+
+From the lecture we know that $N_{\Omega_2} = \set{\twovector{\lambda}{0}: \lambda >0}$, independent of the point.
+Therefore
+\begin{equation*}
+N_{\Omega_2}(\vect{x}) = \set{\twovector{\lambda}{0}: \lambda >0}
+\end{equation*}
+
+For $N_{\Omega_\infty}(\vect{x})$ we use the definition
+\begin{equation*}
+N_{\Omega_\infty}(\vect{x}) = \set{\vect{w} : \langle\vect{w},\vect{y-\twovector{1}{0}}\rangle\leq 0,\ \forall\vect{y}\in\Omega_\infty}
+\end{equation*}
+
+This means that a point $\vect{w} = (w_1,w_2)^\top$ in $N_{\Omega_\infty}(\vect{x})$ has to satisfy the following inequality for any
+$\vect{y} = (y_1,y_2)$ in $\Omega_\infty$
+\begin{equation*}
+w_1(y_1-1) + w_2y_2 \leq 0.
+\end{equation*}
+
+In particular for $\vect{y_+} = (1,1)$ and $\vect{y_-} = (1,-1)$ we get
+\begin{equation*}
+w_2\leq 0,\ w_2\geq 0 \implies w_2 = 0
+\end{equation*}
+
+Therefore the constraints on $w_1$ are
+\begin{equation}\label{eq:w}
+w_1(y_1-1)\leq 0.
+\end{equation}
+Since $\vect{y}\in\Omega_\infty$ we know that $y_1\in[0,1]$ and therefore $(y_1-1)\leq 0$. From this and Eq. \eqref{eq:w} we conclude that
+$w_1 \geq 0$ and therefore
+\begin{equation*}
+N_{\Omega_\infty}(\vect{x}) = \mathbb{R}_0^+\times \set{0}.
+\end{equation*}
+
+
+\end{enumerate}
+}
+
+\end{document}
