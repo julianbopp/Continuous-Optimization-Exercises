@@ -1,0 +1,36 @@
+
+\definecolor{coolblack}{rgb}{0.0, 0.2, 0.3}
+
+\newcommand{\HomeworkV}[3]{%
+  \textcolor{coolblack}{\textbf{Homework #1 (#2):}}
+  \vspace{5mm}
+  \par
+  #3
+  \par
+  \vspace{5mm}
+}
+
+
+\newcommand{\Homework}[3]{
+   \pagestyle{myheadings}
+   \thispagestyle{plain}
+   \newpage
+   \setcounter{page}{1}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf Continuous Optimization
+	\hfill Srping 2023} }
+       \vspace{4mm}
+       \hbox to 6.28in { {\Large \hfill Homework #1: #2  \hfill} }
+       \vspace{2mm}
+       %\hbox to 6.28in { {\it Lecturer: #3 \hfill Scribes: #4} }
+       \hbox to 6.28in { {\it Lecturer: #3 \hfill} }
+      \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{Homework #1: #2}{Homework #1: #2}
+
+   \vspace*{4mm}
+}

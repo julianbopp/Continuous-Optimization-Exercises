@@ -1,0 +1,155 @@
+% Continuous Optimization
+% Aurelien Lucchi
+\documentclass{article}
+
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{mathtools}
+\usepackage[usenames,dvipsnames,table,xcdraw]{xcolor}
+\usepackage{enumerate}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage[margin=0.5in]{geometry}
+\usepackage[round]{natbib}
+
+\input{header_hw}
+
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\newcommand{\minsub}[1]{\operatorname*{min}_{#1}}
+\newcommand{\argminsub}[1]{\operatorname*{argmin}_{#1}}
+\newcommand{\twovector}[2]{\begin{pmatrix} #1 \\ #2 \end{pmatrix}}
+\newcommand{\vect}[1]{\mathbf{#1}}
+\newcommand{\define}{\coloneqq}
+\newcommand{\st}{\textnormal{s.t.}\ }
+\newcommand{\set}[1]{\left\{ #1 \right\}}
+
+\newcommand{\Chi}{\mathcal{X}}
+\newcommand{\xk}{\vect{x}_k}
+\newcommand{\xkk}{\vect{x}_{k+1}}
+\newcommand{\xstar}{\vect{x}^*}
+
+\begin{document}
+\Homework{5}{Proximal Gradient Descent}{Aurelien Lucchi, Student: Julian Bopp}
+
+\HomeworkV{1}{Proximal operator for quadratics}{
+Consider the quadratic function $f(\vect{x})=\frac{1}{2}\vect{x}^\top \vect{Ax}+\vect{b}^\top \vect{x} + \vect{c}$ where $\vect{A}\succcurlyeq 0$.\\
+
+Prove that
+\begin{equation}
+\text{prox}_{\eta f}(\vect{x}) = (\vect{I} + \eta \vect{A})^{-1} (\vect{x}-\eta \vect{b}).
+\end{equation}\\
+
+\underline{Proof}: We start by writing down the definition of the prox operator
+\begin{align*}
+\text{prox}_{\eta f} &= \argminsub{\vect{u}} \eta f(\vect{u}) + \frac{1}{2}\norm{\vect{u-x}}^2\\
+&= \argminsub{\vect{u}} \underbrace{\frac{1}{2}\vect{u^\top u} + \frac{\eta}{2}\vect{u^\top A u} + \vect{u^\top}(\eta \vect{b}-\vect{x}) + \eta\vect{c} + \frac{1}{2}\vect{x^\top x}}_{g(\vect{u})\define}
+\end{align*}
+
+The minimum is attained where $\nabla g(\vect{u}) = 0$, because it is a quadratic convex function.
+
+The gradient is given by
+\begin{equation*}
+\nabla g(\vect{u}) = \vect{u} + \eta \vect{Au} + \eta \vect{b} - \vect{x}.
+\end{equation*}
+
+Solving this for $\nabla g(\vect{u}) = 0$ yields
+\begin{equation*}
+\vect{u} = (\vect{I} + \eta \vect{A})^{-1} (\vect{x}-\eta\vect{b}),
+\end{equation*}
+
+where we used that $\vect{A}\succcurlyeq 0,\ \eta > 0$ and therefore $(\vect{I} + \eta\vect{A})^{-1}$ exists, because the sum of SPD matrices is again SPD.
+}
+
+\HomeworkV{2}{Projected Gradient Descent}{
+
+We want to minimize a function $f$ over a convex set $\Chi$. To do so, we use projected gradient descent that, starting from $\vect{x_0}\in \Chi$, performs the following updates:
+\begin{align*}
+\vect{y}_{k+1} &= \xk - \eta\nabla f(\xk)\\
+\xkk &= \Pi_\Chi (\vect{y}_{k+1}).
+\end{align*}
+
+\begin{enumerate}
+\item Prove that for all $\vect{x}\in\Chi,\vect{z}\in\mathbb{R}^d$:
+\begin{equation*}
+H_\vect{x}(\vect{z})\define(\vect{x} - \Pi_\Chi(\vect{z}))^\top (\vect{z} - \Pi_\Chi(\vect{z}))\leq 0.
+\end{equation*}\\
+
+\underline{Proof}: We notice that $\Pi_\Chi(\vect{z}) = \argminsub{u\in\Chi}\norm{u-z}$. If $\vect{z}\in\Chi$ we have $\Pi_\Chi(\vect{z}) = z$ and therefore $H_\vect{x}(\vect{z}) =0$ and the statement holds. Therefore we now assume $\vect{z} \in \mathbb{R}^d\backslash\Chi$.
+
+Let $\vect{x}\in\Chi$. Since $\Chi$ is convex and $\Pi_\Chi(\vect{z})\in \Chi$, the points on the line segment $\lambda\vect{x} + (1-\lambda)\Pi_\Chi(\vect{z})$ for $\lambda\in[0,1]$ are again in $\Chi$. We now use the fact that $\Pi_\Chi(\vect{z})$ is the closest point to $\vect{z}$ in $\Chi$.
+\begin{align*}
+\norm{\vect{z} - \Pi_\Chi(\vect{z})}^2&\leq\norm{\vect{z} - (\lambda\vect{x} + (1-\lambda)\Pi_\Chi(\vect{z}))}^2\\
+&=\norm{\vect{z} - \Pi_\Chi(\vect{z})}^2 - 2\underbrace{\lambda(\vect{x} -\Pi_\Chi(\vect{z}))^\top(\vect{z}-\Pi_\Chi(\vect{z}))}_{H_\vect{x}(\vect{z})}+\lambda^2\norm{\vect{x}-\Pi_\Chi(\vect{z})}^2.
+\end{align*}
+
+Subtracting the term on the left on both sides yields
+\begin{equation*}
+2\lambda H_\vect{x}(\vect{z}) \leq \lambda^2\norm{\vect{x}-\Pi_\Chi(\vect{z})}^2.
+\end{equation*}
+Asuming $\lambda \neq 0$, dividing by $2\lambda$, and taking the limit as $\lambda$ goes to zero we get the result.
+
+\item If $\xkk = \xk$ after the projected gradient descent update, then $\xk$ is a minimizer of $f$ over $\Chi$.\\
+
+\underline{Proof}: Using the result from 1. and $\vect{z}=\vect{y}_{k+1}$ we get for every $\vect{x}\in\Chi$
+\begin{align*}
+(\vect{x} - \Pi_\Chi(\vect{y}_{k+1}))^\top(\vect{y}_{k+1} - \Pi_\Chi(\vect{y}_{k+1}))\leq 0
+\end{align*}
+Taking a look at the update rules of the projected gradient descent we see that this is the same as
+\begin{align*}
+(\vect{x} - \xkk)^\top(\xk - \eta\nabla f(\xk) - \xkk)\leq 0.
+\end{align*}
+Now using the fact that $\xk = \xkk$ this becomes
+\begin{align*}
+(\vect{x} - \xk)^\top(- \eta\nabla f(\xk) )\leq 0.
+\end{align*}
+This means that $-\nabla f(\xk) \in N_\Chi(\xk)$. Therefore $x_k$ satisfies the first-order optimality condition and is a minimizer of $f$ over $\Chi$.
+
+\end{enumerate}
+}
+
+
+
+\HomeworkV{3}{Proximal Gradient Descent: Convergence analysis}{
+Assume that $f$ is $\beta$-smooth and $\mu$ strongly-convex, then
+\begin{equation}
+\norm{\xkk - \xstar}^2\leq (1-\eta\mu)^k \norm{\vect{x}_1-\xstar}^2.
+\end{equation}
+
+\underline{Proof}: We assume that $\eta\leq \frac{1}{\beta}$. By Lemma 3 (in lecture notes of proximal gradient lecture) we have for all $\vect{x}, \vect{z}\in\mathbb{R}^d$,
+
+\begin{equation*}
+f(\vect{x} - \eta G_\eta(\vect{x})) \leq f(\vect{z}) + \langle G_\eta(\vect{x}), \vect{x} - \vect{z}\rangle
+- \frac{\eta}{2}\norm{G_\eta(\vect{x})}^2 - \frac{\mu}{2}\norm{\vect{x} - \vect{z}}^2.
+\end{equation*}
+
+With $\vect{z} = \xstar,\ \vect{x}=\xk$, we have
+\begin{align*}
+f(\xk - \eta G_\eta(\xk))-f(\xstar) &\leq \langle G_\eta(\xk), \xk - \xstar\rangle
+- \frac{\eta}{2}\norm{G_\eta(\xk)}^2 - \frac{\mu}{2}\norm{\xk - \xstar}^2\\
+&= \frac{1}{2\eta}\left(2(\eta G_\eta(\xk))^\top(\xk-\xstar)-\norm{\eta G_\eta(\xk)}^2\right)-\frac{\mu}{2}\norm{\xk - \xstar}^2\\
+&= \frac{1}{2\eta}\left(\norm{\xk - \xstar}^2 - \norm{\xk - \xstar - \eta G_\eta(\xk)}^2\right)-\frac{\mu}{2}\norm{\xk - \xstar}^2\\
+&= \frac{1}{2\eta}\left(\norm{\xk - \xstar}^2 - \norm{\xkk - \xstar}^2\right)-\frac{\mu}{2}\norm{\xk - \xstar}^2\\
+&= \frac{1}{2\eta}\left((1-\eta\mu)\norm{\xk - \xstar}^2 - \norm{\xkk - \xstar}^2\right)
+\end{align*}
+
+Since $\xstar$ is the minimizer of $f$, the left side is bounded from below by $0$ and we get
+\begin{equation*}
+0\leq\frac{1}{2\eta}\left((1-\eta\mu)\norm{\xk - \xstar}^2 - \norm{\xkk - \xstar}^2\right)
+\end{equation*}
+
+Rearranging yields
+\begin{align*}
+\norm{\xkk - \xstar}^2 \leq (1-\eta\mu)\norm{\xk-\xstar}^2.\\
+\end{align*}
+
+Applying this inequality to the norm term on the right hand side $k-1$ times yields the final inequality
+\begin{align*}
+\norm{\xkk - \xstar}^2 \leq (1-\eta\mu)^k\norm{\vect{x}_1-\xstar}^2.\\
+\end{align*}
+
+}
+
+
+
+\end{document}
